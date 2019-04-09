@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="text_editor/style_textEditor.css">
+	<script type="text/javascript" src="text_editor/text_editor.js"></script>
+	<script type="text/javascript" src="../scripts/main.js"></script>
+	<script type="text/javascript">
+		window.onload = () => {
+			//addPropertiesEditor_news(document.body);
+			xmlHTTPconnect("../php/db_select.php", "table=about", create_newsList)
+		}
+		function create_newsList(txt) {
+			var rows = JSON.parse(txt).rows;
+			var news_list = document.getElementById("news_list");
+
+			for (var i=0; i<rows.length; i++) {
+				var news_opt = document.createElement("option");
+				news_opt.value     = rows[i].id;
+				news_opt.innerText = rows[i].header;
+
+				if (rows[i].visible != "0") {
+					news_opt.setAttribute("selected", "true");
+
+					var left  = document.getElementById("left");
+					var right = document.getElementById("right");
+					var show  = document.getElementById("show_hide");
+					var list  = document.getElementById("news_list");
+
+					//1 - off_left
+					//2 - off_right
+					//8 - on_left
+					//9 - on_right
+					switch(rows[i].visible) {
+						case "1":
+							show.checked   = false;
+							left.checked   = true;
+							list.disabled  = true;
+							left.disabled  = true;
+							right.disabled = true;
+							break;
+						case "8":
+							show.checked   = true;
+							left.checked   = true;
+							list.disabled  = false;
+							left.disabled  = false;
+							right.disabled = false;
+							break;
+						case "2":
+							show.checked   = false;
+							right.checked  = true;
+							list.disabled  = true;
+							left.disabled  = true;
+							right.disabled = true;
+							break;
+						case "9":
+							show.checked   = true;
+							right.checked  = true;
+							list.disabled  = false;
+							left.disabled  = false;
+							right.disabled = false;
+							break;
+					}
+				}
+
+				news_list.appendChild(news_opt);
+			}
+		}
+
+		function update_about_properties() {
+			var ID    = document.getElementById("news_list").value;
+			var state = document.getElementById("show_hide").checked;
+			var left  = document.getElementById("left").checked;
+			var right = document.getElementById("right").checked;
+			//1 - off_left
+			//2 - off_right
+			//8 - on_left
+			//9 - on_right
+			var prop = "9";
+			if (state) {
+				if (left) prop = "8";
+			} else {
+				if (left)  prop = "1";
+				if (right) prop = "2";
+			}
+
+			xmlHTTPconnect("../php/db_update.php", "table=about&"+
+														"id="+ID+
+														"&properties="+prop, 
+														console.log)
+		}
+		function toggle(elem) {
+			var left      = document.getElementById("left");
+			var right     = document.getElementById("right");
+			var news_list = document.getElementById("news_list");
+
+			left.disabled      = !elem.checked;
+			right.disabled     = !elem.checked;
+			news_list.disabled = !elem.checked;
+		}
+	</script>
+	<style type="text/css">
+		#item_list {
+			height: 30px;
+			line-height: 30px;
+			font: 1em Arial;
+		}
+		#news_list {
+			width: 800px;
+			height: 25px;
+			font: bold 1em Arial;
+			border: none;
+			border-bottom: solid 1px grey;
+			outline: none;
+			margin: 0px 15px;
+		}
+		#newsProp_cont {
+			margin-top: 25px;
+		}
+		label {
+			height: 30px;
+			line-height: 30px;
+			font: bold 1em Arial;
+			display: inline-block;
+			position: relative;
+			padding: 10px 10px 0 10px;
+			border-radius: 5px;
+			margin: 5px;
+		}
+			input[type='checkbox'], input[type='radio'] {
+				display: none;
+			}
+			label:before {
+				content: "";
+				margin-right: 5px;
+				display: inline-block;
+				width: 14px;
+				height: 14px;
+				position: relative;
+				top: 1px;
+				border: 1px solid grey;
+				border-radius: 25% 25%;
+				background-color: #9cdcfa;
+			}
+			input[type='radio'] ~ label:before {
+				border-radius: 50% 50%;
+			}
+			input[type='checkbox']:checked ~ label:after, input[type='radio']:checked ~ label:after {
+				content: "";
+				width: 8px;
+				height: 8px;
+				position: absolute;
+				top: 14px;
+				left: 13px;
+				border: 1px solid #FF8900;
+				border-radius: 25% 25%;
+				background-color: #FF8900;
+			}
+			input[type='radio']:checked ~ label:after {
+				border-radius: 50% 50%;
+			}
+			input[type='checkbox']:checked ~ label, input[type='radio']:checked ~ label {
+				background-color: #FF8900;
+			}
+
+			#active_elem span {
+				display: block;
+				font: bold 1em Arial;
+				margin: 10px 5px;
+			}
+			#active_elem div {
+				float: left;
+			}
+		#button_save {
+			border-radius: 5px;
+			font: bold 1em Arial;
+			width: 86px;
+			padding: 10px 25px;
+			margin-left: 5px;
+			cursor: pointer;
+			background-color: #FF8900;
+			user-select: none;
+		}
+		#button_save:hover {
+			background-color: #ffb45d;
+		}
+		#button_save:active {
+			background-color: #b96300;
+		}
+	</style>
+</head>
+<body>
+<center><h1>Изменить свойства описания</h1></center><hr>
+<div>
+	<input type="checkbox" id="show_hide" onchange="toggle(this)">
+	<label for="show_hide">Показать раздел описания</label>
+</div>
+<div id="active_elem">
+	<span>Расположение раздела описания:</span>
+	<div>
+		<input type="radio" name="lr" id="left">
+		<label for="left">слева</label>
+	</div>
+	<div>
+		<input type="radio" name="lr" id="right">
+		<label for="right">справа</label>
+	</div><br><br><br>
+	<span>Активный раздел описания:</span>
+	<select id="news_list">
+		<!--<option disabled="true" selected="true">Выберите активную новость</option>-->
+	</select>
+</div>
+<hr>
+<div id="button_save" onclick="update_about_properties()">Сохранить</div>
+</body>
+</html>

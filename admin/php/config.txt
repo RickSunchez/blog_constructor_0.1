@@ -1,0 +1,1 @@
+{"link":"localhost","user":"root","password":"","database":"last_test"}

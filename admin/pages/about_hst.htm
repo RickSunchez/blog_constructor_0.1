@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="style_table.css">
+	<script type="text/javascript" src="scripts_admin.js"></script>
+	<script type="text/javascript" src="../scripts/main.js"></script>
+	<script type="text/javascript">
+		window.onload = () =>{
+			xmlHTTPconnect("../php/db_select.php", "table=about", callback);
+		}
+		function callback(txt) {
+			//console.log(txt);
+			var headers = ["№", "ID", "Содержание", "Активный", "Удалить"];
+			var dataJSON = JSON.parse(txt);
+			
+			createTable(document.body, dataJSON, headers);
+		}
+		function createTable(parentNode, tableJSON, headers) {
+			var table = document.createElement("table");
+			table.id = "info-table";
+			var header_tr = document.createElement("tr");
+
+			for (var i=0; i<headers.length; i++) {
+				var th = document.createElement("th");
+				th.innerText = headers[i];
+
+				header_tr.appendChild(th);
+			}
+			table.appendChild(header_tr);
+
+			for (var j=0; j<tableJSON.rows.length; j++) {
+				var tr = document.createElement("tr");
+				var content = [j+1, 
+							   tableJSON.rows[j].id,
+							   tableJSON.rows[j].header,
+							   tableJSON.rows[j].visible]
+				for (var i=0; i<content.length; i++) {
+					var td = document.createElement("td");
+					td.innerText = content[i];
+
+					tr.appendChild(td);
+				}
+
+				var del_td = document.createElement("td");
+				var del_bt = document.createElement("button");
+
+				del_bt.className = "del_bt";
+				del_bt.innerText = "Удалить";
+				del_bt.setAttribute("onclick", "del_pinned("+tableJSON.rows[j].id+")");
+
+				del_td.appendChild(del_bt);
+
+				tr.appendChild(del_td);
+				table.appendChild(tr);
+			}
+			parentNode.appendChild(table);
+		}
+
+		function del_pinned(ID) {
+			xmlHTTPconnect("../php/db_remove.php", "table=about&id="+ID, console.log);
+			window.location.reload();
+		}
+	</script>
+	<style type="text/css">
+		table, #search-text {
+			width: 500px;
+		}
+
+	</style>
+</head>
+<body>
+	<center><h1>Описания блога</h1><hr></center>
+	<input class="form-control" type="text" placeholder="Введите слово или чать слова для поиска" id="search-text" onkeyup="tableSearch()">
+</body>
+</html>

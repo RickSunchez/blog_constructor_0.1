@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="text_editor/style_textEditor.css">
+	<script type="text/javascript" src="text_editor/text_editor.js"></script>
+	<script type="text/javascript" src="../scripts/main.js"></script>
+	<script type="text/javascript">
+		window.onload = () => {
+			//addPropertiesEditor_news(document.body);
+			xmlHTTPconnect("../php/db_select.php", "table=news", create_newsList)
+		}
+		function create_newsList(txt) {
+			var rows = JSON.parse(txt).rows;
+			//console.log(rows);
+			var news_list = document.getElementById("news_list");
+			for (var i=0; i<rows.length; i++) {
+				var news_opt = document.createElement("option");
+				news_opt.value     = rows[i].id;
+				news_opt.innerText = rows[i].header;
+
+				news_list.appendChild(news_opt);
+			}
+		}
+		function load_to_set(list_item) {
+			//console.log(list_item.value);
+			xmlHTTPconnect("../php/db_select.php", "table=news&id="+list_item.value, loadItem)
+		}
+		function loadItem(txt) {
+			var row = JSON.parse(txt).rows[0];
+			var prop = [1,1,1];
+
+			if (row.prop != "0") {
+				var ppt = JSON.parse(row.prop);
+				prop[0] = ppt.likes;
+				prop[1] = ppt.share;
+				prop[2] = ppt.reprt;
+			}
+
+			addPropertiesEditor_news(document.body, prop[0], prop[1], prop[2], row.id);
+		}
+
+		function addPropertiesEditor_news(parentNode, likes, share, report, ID) {
+			var newsProp_cont = document.createElement("div");
+			var likesCheck = document.createElement("input");
+			var shareCheck = document.createElement("input");
+			var reptsCheck = document.createElement("input");
+
+			var label_l = document.createElement("label");
+			var label_s = document.createElement("label");
+			var label_r = document.createElement("label");
+
+			newsProp_cont.id = "newsProp_cont"; 
+			likesCheck.id 	 = "likesCheck";
+			shareCheck.id 	 = "shareCheck";
+			reptsCheck.id 	 = "reptsCheck";
+
+			likesCheck.type = "checkbox";
+			shareCheck.type = "checkbox";
+			reptsCheck.type = "checkbox";
+
+			label_l.setAttribute("for", "likesCheck");
+			label_s.setAttribute("for", "shareCheck");
+			label_r.setAttribute("for", "reptsCheck");
+
+			label_l.innerText = "Показывать счетчит лайков";
+			label_s.innerText = "Показывать счетчит поделившихся";
+			label_r.innerText = "Показывать счетчит дизлайков";
+
+			if (likes  == "1") {likesCheck.checked = true;}
+			if (share  == "1") {shareCheck.checked = true;}
+			if (report == "1") {reptsCheck.checked = true;}
+
+			var arr = [[likesCheck,label_l], [shareCheck,label_s], [reptsCheck,label_r]]
+			for (var i=0; i<arr.length; i++) {
+				var cont = document.createElement("div");
+				cont.appendChild(arr[i][0]);
+				cont.appendChild(arr[i][1]);
+
+				newsProp_cont.appendChild(cont);
+			}
+
+			var button_save = document.createElement("div");
+			button_save.id = "button_save";
+			button_save.onclick = function () {
+				var data = {
+					"likes": IO(likesCheck.checked),
+					"share": IO(shareCheck.checked),
+					"reprt": IO(reptsCheck.checked),
+				}
+				
+				function IO(i) {if (i) return "1"; else return "0";}
+
+				var data_string = JSON.stringify(data);
+				//console.log(data_string);
+				xmlHTTPconnect("../php/db_update.php", "table=news&"+
+														"id="+ID+
+														"&properties="+data_string, 
+														console.log)
+			}
+			button_save.innerText = "Сохранить";
+
+			parentNode.appendChild(newsProp_cont);
+
+			var hr = document.createElement("hr");
+			parentNode.appendChild(hr);
+			
+			parentNode.appendChild(button_save);
+		}
+	</script>
+	<style type="text/css">
+		#item_list {
+			height: 30px;
+			line-height: 30px;
+			font: 1em Arial;
+		}
+		#news_list {
+			width: 800px;
+			height: 25px;
+			font: bold 1em Arial;
+			border: none;
+			border-bottom: solid 1px grey;
+			outline: none;
+			margin: 15px;
+		}
+		#newsProp_cont {
+			margin-top: 25px;
+		}
+		label {
+			height: 30px;
+			line-height: 30px;
+			font: bold 1em Arial;
+			display: inline-block;
+			position: relative;
+			padding: 10px 10px 0 10px;
+			border-radius: 5px;
+			margin: 5px;
+		}
+			input[type='checkbox'] {
+				display: none;
+			}
+			label:before {
+				content: "";
+				margin-right: 5px;
+				display: inline-block;
+				width: 14px;
+				height: 14px;
+				position: relative;
+				top: 1px;
+				border: 1px solid grey;
+				border-radius: 25% 25%;
+				background-color: #9cdcfa;
+			}
+			input[type='checkbox']:checked ~ label:after {
+				content: "";
+				width: 8px;
+				height: 8px;
+				position: absolute;
+				top: 14px;
+				left: 13px;
+				border: 1px solid #FF8900;
+				border-radius: 25% 25%;
+				background-color: #FF8900;
+			}
+			input[type='checkbox']:checked ~ label {
+				background-color: #FF8900;
+			}
+		#button_save {
+			border-radius: 5px;
+			font: bold 1em Arial;
+			float: left;
+			padding: 10px 25px;
+			margin-left: 5px;
+			cursor: pointer;
+			background-color: #FF8900;
+			user-select: none;
+		}
+		#button_save:hover {
+			background-color: #ffb45d;
+		}
+		#button_save:active {
+			background-color: #b96300;
+		}
+	</style>
+</head>
+<body>
+<center><h1>Изменить свойства новости</h1></center><hr>
+<center id="item_list">
+	<select id="news_list" onchange="load_to_set(this)">
+		<option disabled="true" selected="true">Выберите новость для изменения свойств</option>
+	</select>
+</center>
+</body>
+</html>

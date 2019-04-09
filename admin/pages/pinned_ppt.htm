@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="text_editor/style_textEditor.css">
+	<script type="text/javascript" src="text_editor/text_editor.js"></script>
+	<script type="text/javascript" src="../scripts/main.js"></script>
+	<script type="text/javascript">
+		window.onload = () => {
+			//addPropertiesEditor_news(document.body);
+			xmlHTTPconnect("../php/db_select.php", "table=pinned", create_newsList)
+		}
+		function create_newsList(txt) {
+			var rows = JSON.parse(txt).rows;
+			var news_list = document.getElementById("news_list");
+
+			for (var i=0; i<rows.length; i++) {
+				var news_opt = document.createElement("option");
+				news_opt.value     = rows[i].id;
+				news_opt.innerText = rows[i].header;
+
+				if (rows[i].visible != 0) {
+					news_opt.setAttribute("selected", "true");
+
+					var list = document.getElementById("news_list");
+					var show = document.getElementById("show_hide");
+					if (rows[i].visible == "1") {
+						show.checked = "true";
+					} else {
+						list.disabled = "true";
+					}
+				}
+
+				news_list.appendChild(news_opt);
+			}
+		}
+
+		function update_pinned_properties() {
+			var ID = document.getElementById("news_list").value;
+			var state = document.getElementById("show_hide").checked;
+
+			var prop = (state) ? "1" : "2";
+
+			xmlHTTPconnect("../php/db_update.php", "table=pinned&"+
+														"id="+ID+
+														"&properties="+prop, 
+														console.log)
+		}
+		function toggle(elem) {
+			var pinned_list = document.getElementById("news_list");
+
+			if (elem.checked) {
+				pinned_list.disabled = false;
+			} else {
+				pinned_list.disabled = true;
+			}
+		}
+	</script>
+	<style type="text/css">
+		#item_list {
+			height: 30px;
+			line-height: 30px;
+			font: 1em Arial;
+		}
+		#news_list {
+			width: 800px;
+			height: 25px;
+			font: bold 1em Arial;
+			border: none;
+			border-bottom: solid 1px grey;
+			outline: none;
+			margin: 15px;
+		}
+		#newsProp_cont {
+			margin-top: 25px;
+		}
+		label {
+			height: 30px;
+			line-height: 30px;
+			font: bold 1em Arial;
+			display: inline-block;
+			position: relative;
+			padding: 10px 10px 0 10px;
+			border-radius: 5px;
+			margin: 5px;
+		}
+			input[type='checkbox'] {
+				display: none;
+			}
+			label:before {
+				content: "";
+				margin-right: 5px;
+				display: inline-block;
+				width: 14px;
+				height: 14px;
+				position: relative;
+				top: 1px;
+				border: 1px solid grey;
+				border-radius: 25% 25%;
+				background-color: #9cdcfa;
+			}
+			input[type='checkbox']:checked ~ label:after {
+				content: "";
+				width: 8px;
+				height: 8px;
+				position: absolute;
+				top: 14px;
+				left: 13px;
+				border: 1px solid #FF8900;
+				border-radius: 25% 25%;
+				background-color: #FF8900;
+			}
+			input[type='checkbox']:checked ~ label {
+				background-color: #FF8900;
+			}
+		#button_save {
+			border-radius: 5px;
+			font: bold 1em Arial;
+			width: 86px;
+			padding: 10px 25px;
+			margin-left: 5px;
+			cursor: pointer;
+			background-color: #FF8900;
+			user-select: none;
+		}
+		#button_save:hover {
+			background-color: #ffb45d;
+		}
+		#button_save:active {
+			background-color: #b96300;
+		}
+	</style>
+</head>
+<body>
+<center><h1>Изменить свойства закрепленного сообщения</h1></center><hr>
+<div>
+	<input type="checkbox" id="show_hide" onchange="toggle(this)">
+	<label for="show_hide">Показать закрепленное сообщение</label>
+</div>
+<select id="news_list">
+	<!--<option disabled="true" selected="true">Выберите активную новость</option>-->
+</select>
+<hr>
+<div id="button_save" onclick="update_pinned_properties()">Сохранить</div>
+</body>
+</html>

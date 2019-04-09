@@ -1,0 +1,87 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>blog_creator alpha</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+	<!--news append link-->
+	<script src="scripts/news.js"></script>
+	<link rel="stylesheet" type="text/css" href="scripts/style_news.css">
+	<!-------------------->
+	<script type="text/javascript" src="admin/scripts/main.js"></script>
+	<script type="text/javascript">
+		var pinned;
+		var about
+		var news;
+		window.onload = () => {
+			pinned = document.getElementById("pinned");
+			news   = document.getElementById("news");
+			about  = document.getElementsByClassName("about")[0];
+			//console.log(pinned.getBoundingClientRect().height);
+
+			xmlHTTPconnect("admin/php/db_select.php", "table=pinned&properties=0", create_pinned)
+		}
+
+		function create_pinned(txt) {
+			var row = JSON.parse(txt).rows[0];
+
+			add_content(pinned, row.header, row.content);
+
+			news.style.height = "calc(100vh - 50px - 40px - "+pinned.offsetHeight+"px - 40px)";
+			xmlHTTPconnect("admin/php/db_select.php", "table=news", create_news);
+		}
+		function create_news(txt) {
+			var rows = JSON.parse(txt).rows;
+			for (var i=0; i<rows.length; i++) {
+				add_news(document.getElementById("news"),
+						 rows[i].id,
+						 rows[i].header,
+						 rows[i].content,
+						 rows[i].date,
+						 {"name":"Smit", "img":"scripts\/author_ava.jpg"},
+						 rows[i].prop);
+			}
+
+			xmlHTTPconnect("admin/php/db_select.php", "table=about&properties=0", create_about);
+		}
+		function create_about(txt) {
+			var row = JSON.parse(txt).rows[0];
+			add_content(about, row.header, row.content);
+		}
+		function add_content(parentNode, header, content, ID) {
+			var content_cont = document.createElement("div");
+			var content_head = document.createElement("div");
+			var content_main = document.createElement("div");
+
+			content_head.id = "content_head";
+			content_main.id = "content_main";
+
+			content_head.innerHTML = header;
+			content_main.innerHTML = content;
+
+			content_cont.appendChild(content_head);
+			//content_cont.innerHTML += "<hr>";
+			content_cont.appendChild(content_main);
+
+			parentNode.appendChild(content_cont);
+		}
+	</script>
+</head>
+<body>
+	<header>
+		<div class="logo">
+		</div>
+	</header>
+	<div class="container_main">
+		<div class="side">
+			<div class="about">
+			</div>
+		</div>
+		<div id="main">
+			<div id="pinned">
+			</div>
+			<div id="news">
+			</div>
+		</div>
+	</div>
+</body>
+</html>

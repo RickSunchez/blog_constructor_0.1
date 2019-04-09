@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="text_editor/style_textEditor.css">
+	<script type="text/javascript" src="text_editor/text_editor.js"></script>
+	<script type="text/javascript" src="../scripts/main.js"></script>
+	<script type="text/javascript">
+		window.onload = () => {
+			add_TextEditor(document.body, callback);
+		}
+		function callback(txt) {
+			var data = "data=" + txt + "&table=pinned";
+			//console.log(data);
+			xmlHTTPconnect("../php/db_insert.php", data, console.log)
+		}
+	</script>
+</head>
+<body>
+<center><h1>Добавить закрепленное сообщение</h1></center><hr>
+</body>
+</html>

@@ -1,0 +1,17 @@
+table {
+	margin: 0 auto;
+	border-collapse: collapse;
+}
+table td, table th {
+	border: solid 1px grey;
+	font: 25px Arial;
+	text-align: center;
+	padding: 10px;
+}
+table td button, #search-text{
+	font: 25px Arial;
+}
+#search-text {
+	margin: 10px auto;
+	display: block;
+}

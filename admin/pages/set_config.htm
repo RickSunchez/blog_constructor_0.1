@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="scripts_admin.js"></script>
+	<script type="text/javascript" src="../scripts/main.js"></script>
+	<script type="text/javascript">
+		var link;var user;var password;var database;
+
+		window.onload = () => {
+			link     = document.getElementById("link");
+			user     = document.getElementById("user");
+			password = document.getElementById("password");
+			database = document.getElementById("database");
+
+			xmlHTTPconnect("../php/config_get.php", "data=1", config_content);
+		}
+			function config_content(txt) {
+				if (!txt) return false;
+				var data = JSON.parse(txt);
+				link.value     = data.link;
+				user.value     = data.user;
+				password.value = data.password;
+				database.value = data.database;
+			}
+		function send_db_data() {
+			var data = {
+				"link": link.value,
+				"user": user.value,
+				"password": password.value,
+				"database": database.value
+			};
+
+			xmlHTTPconnect("../php/config_set.php", "data="+JSON.stringify(data), createTable_on);
+		}
+			function createTable_on(txt) {
+				console.log(txt);
+				alert(txt);
+				/*document.getElementById("tabCreate").disabled = false;*/
+			}
+		function create_db_tables() {
+			xmlHTTPconnect("../php/db_create.php", "", console.log);
+			alert("Таблицы успешно созданы!");
+		}
+		function drop_db_tables() {
+			xmlHTTPconnect("../php/db_drop.php", "", console.log);
+			alert("Таблицы успешно удалены!");
+		}
+	</script>
+	<style type="text/css">
+		table {
+			margin: 0 auto;
+			border-collapse: collapse;
+		}
+		input {
+			display: block;
+			margin: 15px;
+			font: 25px Arial;
+		}
+		td {
+			border: none;
+			font: 25px Arial;
+			text-align: right;
+			padding: 10px;
+		}
+		#save_b {
+			text-align: center;
+		}
+		#save_b button {
+			width: 400px;
+			height: 50px;
+			font: 25px Arial;
+		}
+	</style>
+</head>
+<body>
+	<center><h1>Настройки базы данных</h1><hr></center>
+	<table>
+		<tr>
+			<td>Расположение:</td>
+			<td><input type="text" placeholder="link"     id="link"></td>
+		</tr>
+		<tr>
+			<td>Логин:</td>
+			<td><input type="text" placeholder="user"     id="user"></td>
+		</tr>
+		<tr>
+			<td>Пароль:</td>
+			<td><input type="text" placeholder="password" id="password"></td>
+		</tr>
+		<tr>
+			<td>Имя БД:</td>
+			<td><input type="text" placeholder="database" id="database"></td>
+		</tr>
+		<tr>
+			<td colspan="2" id="save_b">
+				<button onclick="send_db_data()">Сохранить</button>
+			</td>
+		</tr>
+	</table>
+
+	<hr>
+
+	<table>
+		<tr>
+			<td colspan="2" id="save_b">
+				<button onclick="create_db_tables()" id="tabCreate">Создать таблицы базы данных</button>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" id="save_b">
+				<button onclick="drop_db_tables()">Удалить данные</button>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

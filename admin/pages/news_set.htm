@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="text_editor/style_textEditor.css">
+	<script type="text/javascript" src="text_editor/text_editor.js"></script>
+	<script type="text/javascript" src="../scripts/main.js"></script>
+	<script type="text/javascript">
+		window.onload = () => {
+			xmlHTTPconnect("../php/db_select.php", "table=news", create_newsList)
+		}
+		function create_newsList(txt) {
+			var rows = JSON.parse(txt).rows;
+			//console.log(rows);
+			var news_list = document.getElementById("news_list");
+			for (var i=0; i<rows.length; i++) {
+				var news_opt = document.createElement("option");
+				news_opt.value     = rows[i].id;
+				news_opt.innerText = rows[i].header;
+
+				news_list.appendChild(news_opt);
+			}
+		}
+		function load_to_set(list_item) {
+			if (document.getElementById("container_main")) {
+				document.body.removeChild(document.getElementById("container_main"));
+			}
+			//console.log(list_item.value);
+			xmlHTTPconnect("../php/db_select.php", "table=news&id="+list_item.value, loadItem)
+		}
+		function loadItem(txt) {
+			var row = JSON.parse(txt).rows[0];
+			add_TextEditor(document.body, update_data);
+
+			document.getElementById("container_head").firstElementChild.value = row.header;
+			document.getElementById("container_text").contentDocument.body.innerHTML = row.content;
+
+			document.getElementById("container_head").setAttribute("news_id", row.id);
+		}
+		function update_data(txt) {
+			var header = JSON.parse(txt).header;
+			var content = JSON.parse(txt).content;
+			var ID = document.getElementById("container_head").getAttribute("news_id");
+			xmlHTTPconnect("../php/db_update.php", "table=news&"+
+												   "header="+header+
+												   "&content="+content+
+												   "&id="+ID, 
+												   console.log)
+		}
+	</script>
+	<style type="text/css">
+		#item_list {
+			height: 30px;
+			line-height: 30px;
+			font: 1em Arial;;
+		}
+		#container_main {
+			height: calc(100vh - 50px - 2em - 47px - 30px - 55px);
+			margin: 20px auto;
+		}
+		#container_text {
+			height: calc(100vh - 50px - 40px - 20px - 2em - 47px - 30px - 55px);
+		}
+		#news_list {
+			width: 800px;
+			height: 25px;
+			font: bold 1em Arial;
+			border: none;
+			border-bottom: solid 1px grey;
+			outline: none;
+			margin: 15px;
+		}
+	</style>
+</head>
+<body>
+<center><h1>Редактировать сообщение</h1></center><hr>
+<center id="item_list">
+	<select id="news_list" onchange="load_to_set(this)">
+		<option disabled="true" selected="true">Выберите новость для изменения</option>
+	</select>
+</center>
+</body>
+</html>

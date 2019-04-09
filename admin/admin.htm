@@ -1,0 +1,81 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>blog_creator alpha</title>
+<link rel="stylesheet" type="text/css" href="style_admin.css">
+<script type="text/javascript" src="scripts/main.js"></script>
+<script type="text/javascript">
+	/*window.onload = () => {
+		xmlHTTPconnect("php/db_create.php", "",callback)
+	}
+	function callback(txt) {
+		console.log(txt);
+		if (getCookie("isAnswered") == "1") return;
+		if (txt.match(/exists/i)) {
+			if (!confirm("База данных уже создана. \
+				Продолжить работать в этой базе данных? \
+				\nOK - продолжить \
+				\nCancel (Отмена) - удалить текущую базу данных и создать новую")) {
+				xmlHTTPconnect("php/db_drop.php", "",console.log);
+				xmlHTTPconnect("php/db_create.php", "",console.log);
+			}
+		}
+		setCookie("isAnswered","1");
+	}*/
+</script>
+</head>
+<body>
+	<nav>
+		<ul id="menu">
+			<li >Pinned message
+				<ul class="level1">
+					<li>
+						<a href="pages/pinned_hst.htm" target="m">History</a></li>
+					<li>
+						<a href="pages/pinned_set.htm" target="m">Set content</a></li>
+					<li>
+						<a href="pages/pinned_add.htm" target="m">Add content</a></li>
+					<li>
+						<a href="pages/pinned_ppt.htm" target="m">Properties</a></li>
+				</ul>
+			</li>
+			<li>News
+				<ul class="level1">
+					<li>
+						<a href="pages/news_lst.htm" target="m">News list</a></li>
+					<li>
+						<a href="pages/news_set.htm" target="m">Set news</a></li>
+					<li>
+						<a href="pages/news_add.htm" target="m">Add news</a></li>
+					<li>
+						<a href="pages/news_ppt.htm" target="m">Properties</a></li>
+				</ul>
+			</li>
+			<li>About
+				<ul class="level1">
+					<li>
+						<a href="pages/about_hst.htm" target="m">History</a></li>
+					<li>
+						<a href="pages/about_set.htm" target="m">Set content</a></li>
+					<li>
+						<a href="pages/about_add.htm" target="m">Add content</a></li>
+					<li>
+						<a href="pages/about_ppt.htm" target="m">Properties</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="pages/set_config.htm" target="m">
+				Database
+				</a>
+			</li>
+			<li>
+				<a href="pages/set_images.htm" target="m">
+				Add image
+				</a>
+			</li>
+		</ul>
+	</nav>
+	<iframe id="content_edit_window" name="m" src="pages/set_config.htm">
+	</iframe>
+</body>
+</html>
