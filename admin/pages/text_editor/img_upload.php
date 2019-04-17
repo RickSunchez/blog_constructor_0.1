@@ -1,6 +1,6 @@
 <?php
 //$dir = $_SERVER['DOCUMENT_ROOT']."/public_html/user_images";
-$dir = str_replace("admin\pages", "", dirname(__DIR__))."/user_images";
+$dir = str_replace("admin/pages", "", dirname(__DIR__))."user_images";
 
 $files = scandir($dir);
 
